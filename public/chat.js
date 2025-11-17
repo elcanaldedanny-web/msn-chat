@@ -1,4 +1,6 @@
-const socket = io("https://msn-chat-dkwa.onrender.com");
+const socket = io("https://msn-chat-dkwa.onrender.com", {
+    transports: ["websocket"]
+});
 
 /* ===== VISTAS ===== */
 const homeView = document.getElementById('homeView');
@@ -1022,4 +1024,5 @@ const startedInRoom = applyRoomFromURL();
 if (!startedInRoom) {
   showView('home');
 }
+
 
