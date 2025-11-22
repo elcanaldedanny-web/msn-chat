@@ -39,17 +39,29 @@ app.use("/uploads", express.static(uploadDir));
 // ======================================================
 // 🔧 CONFIG MYSQL
 // ======================================================
-const dbConfig = {
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "shateros",
-};
-
 let pool;
+
 (async () => {
-  pool = await mysql.createPool(dbConfig);
-  console.log("✅ Conectado a MySQL");
+  try {
+    pool = await mysql.createPool({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT || 3306,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0
+    });
+
+    // Prueba de conexión
+    const conn = await pool.getConnection();
+    console.log("✅ MySQL conectado correctamente en Render");
+    conn.release();
+
+  } catch (error) {
+    console.error("❌ Error conectando MySQL:", error);
+  }
 })();
 
 // ======================================================
@@ -897,7 +909,8 @@ app.get("/api/get-room-info", async (req, res) => {
 // ======================================================
 // 🔧 START SERVER
 // ======================================================
-const PORT = 3000;
-server.listen(PORT, () =>
-  console.log("🚀 Servidor Shateros 2.0 funcionando en http://localhost:" + PORT)
-);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log("🚀 Servidor Shateros 2.0 activo en puerto " + PORT);
+});
+
